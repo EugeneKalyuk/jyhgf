@@ -2,20 +2,50 @@
 	display block
 	font-size 14px
 	margin-top 5px
+.wrap
+	height 100%
+	.container
+		&:first-child
+			display table
+			padding-bottom  250px
+			margin-bottom  -250px
+			height 100%
 
-.name-field,
+.header-item,
 .message-field
 	box-sizing border-box
 	padding 5px 10px
 .items
 	border 1px solid #eee
 	margin-top 20px
-.name-item
+.header-item
 	border-bottom 1px solid #eee
 	font-size 15px
 	font-weight 600
 	box-sizing border-box
 	padding 10px
+	display flex
+	justify-content space-between
+	align-items center
+	&__handlers
+		display flex
+	&__time-item
+		font-size 12px
+		font-weight 400
+		font-style italic
+	&__edit-item
+		margin-right 5px
+		button
+			border none
+			background transparent
+			padding 0
+			width 15px
+	&__del-item
+		button
+			border none
+			background transparent
+			padding 0
+			width 21px
 .message-item
 	box-sizing border-box
 	padding 10px
@@ -36,6 +66,5 @@
 	opacity 0
 	transition .2s all
 
-	&_active{
+	&_active
 		opacity 1
-	}

@@ -7,17 +7,21 @@ if (global.IS_BROWSER) {
 
 const propTypes = {
 	onSendMessage: PropTypes.func.isRequired,
+	onDelComment: PropTypes.func.isRequired,
 	messages: PropTypes.array.isRequired
 };
 
 class GuestBook extends Component {
 	constructor(props) {
 		super(props);
+
 		this.state = {
 			name: '',
 			message: '',
 			messageLength: 500
 		};
+
+		this.handleRemove = this.handleRemove.bind(this);
 	}
 
 	handleName(e) {
@@ -28,7 +32,7 @@ class GuestBook extends Component {
 
 	handleMessage(e) {
 		let counterSymbols;
-		console.log(e.target.value.length); // eslint-disable-line no-console
+
 		counterSymbols = 500 - e.target.value.length;
 
 		this.setState({
@@ -40,51 +44,54 @@ class GuestBook extends Component {
 	handleSubmit(e) {
 		e.preventDefault();
 
-		// const validateFields = {
-		// 		name: {required: true},
-		// 		message: {required: true}
-		// 	};
-		// const errors = {};
-		//
-		// Object.keys(this.state).forEach((fieldName) => {
-		// 	if (validateFields[fieldName]) {
-		// 		if (validateFields[fieldName].required) {
-		// 			if (!this.state[fieldName]) {
-		// 				errors[fieldName] = validateFields[fieldName].required;
-		// 			}
-		// 		}
-		// 	}
-		// });
-		//
-		// if (Object.keys(errors).length) {
-		// 	console.log(errors); // eslint-disable-line no-console
-		// 	return this.setState({errors});
-		// }
-		//
-		// console.log(errors); // eslint-disable-line no-console
-
 		if (this.state.name !== '' && this.state.message) {
 			this.props.onSendMessage(this.state);
 			this.setState({
 				name: '',
-				message: ''
+				message: '',
+				messageLength: 500
 			});
 		}
 
 		return false;
 	}
 
+	handleRemove({index}) {
+		this.props.onDelComment(index);
+	}
+
 	render() {
-		// const {errors = { } } = this.state;
 		return (
 			<div className='wrap'>
 				<div className='container'>
 					<ul className='list'>
-						{this.props.messages.map((message, index) =>
-							<li key={index} className='items list__items'>
-								<div className='name-item items__name-item'>{message.name}</div>
-								<div className='message-item items__message-item'>{message.message}</div>
-							</li>
+						{this.props.messages.map((message, index) => {
+							function handleRemoveAdapter() {
+								this.handleRemove({index});
+							}
+							return (
+								<li key={index} id={message.id} className='items list__items'>
+									<div className='header-item items__header-item'>
+										<div className='header-item__time-item'>{message.time}</div>
+										<div className='header-item__name-item'>{message.name}</div>
+										<div className='header-item__handlers'>
+											<div className='header-item__edit-item'>
+												<button type='button'>
+													<img src='../../images/edit.svg' alt='edit' />
+												</button>
+											</div>
+											<div className='header-item__del-item'>
+												<button type='button'
+													onClick={handleRemoveAdapter.bind(this)}>
+													<img src='../../images/delete.svg' alt='delete' />
+												</button>
+											</div>
+										</div>
+									</div>
+									<div className='message-item items__message-item'>{message.message}</div>
+								</li>
+							);
+						}
 						)}
 					</ul>
 				</div>
@@ -126,12 +133,45 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
 	return ({
 		onSendMessage: (message) => {
+			let date = new Date(),
+				currHours = date.getHours(),
+				currMinutes = date.getMinutes(),
+				currSec = date.getSeconds(),
+				currDate = date.getDate(),
+				currMonth = date.getMonth() + 1,
+				currYear = date.getFullYear();
+
+			if (currSec < 10) {
+				currSec = '0' + currSec;
+			}
+			if (currHours < 10) {
+				currHours = '0' + currHours;
+			}
+			if (currMinutes < 10) {
+				currMinutes = '0' + currMinutes;
+			}
+
+			if (currMonth < 10) {
+				currMonth = '0' + currMonth;
+			}
+
+			const time = currHours + ':' +
+					currMinutes + ':' +
+					currSec + ' ' +
+					currDate + '/' +
+					currMonth + '/' +
+					currYear;
+
 			const payload = {
 				id: Date.now().toString(),
 				name: message.name,
-				message: message.message
+				message: message.message,
+				time: time
 			};
 			dispatch({type: 'NEW_MESSAGE', payload});
+		},
+		onDelComment: (index) => {
+			dispatch({type: 'DEL_MESSAGE', index});
 		}
 	});
 }
@@ -140,3 +180,26 @@ export default connect(
 	mapStateToProps,
 	mapDispatchToProps
 )(GuestBook);
+
+// const validateFields = {
+// 		name: {required: true},
+// 		message: {required: true}
+// 	};
+// const errors = {};
+//
+// Object.keys(this.state).forEach((fieldName) => {
+// 	if (validateFields[fieldName]) {
+// 		if (validateFields[fieldName].required) {
+// 			if (!this.state[fieldName]) {
+// 				errors[fieldName] = validateFields[fieldName].required;
+// 			}
+// 		}
+// 	}
+// });
+//
+// if (Object.keys(errors).length) {
+// 	console.log(errors); // eslint-disable-line no-console
+// 	return this.setState({errors});
+// }
+//
+// console.log(errors); // eslint-disable-line no-console

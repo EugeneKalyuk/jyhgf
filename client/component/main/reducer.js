@@ -1,4 +1,4 @@
-import {NEW_MESSAGE} from './actions';
+import {NEW_MESSAGE, DEL_MESSAGE} from './actions';
 
 const init = [];
 
@@ -9,6 +9,12 @@ export default function main(state = init, action) {
       return [
 		...state, action.payload
       ];
+		case DEL_MESSAGE:
+			let _state = state.splice(action.index, 1); // eslint-disable-line no-underscore-dangle
+
+			return [
+				..._state
+			];
     default:
       return state;
   }
