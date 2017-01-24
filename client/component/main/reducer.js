@@ -1,21 +1,27 @@
-import {NEW_MESSAGE, DEL_MESSAGE} from './actions';
+import {NEW_MESSAGE, DEL_MESSAGE, EDIT_MESSAGE} from './actions';
 
-const init = [];
-
+const init = JSON.parse(localStorage.getItem('list')) || [];
+console.log(init); // eslint-disable-line
 
 export default function main(state = init, action) {
-  switch (action.type) {
-	case NEW_MESSAGE:
-      return [
-		...state, action.payload
-      ];
-		case DEL_MESSAGE:
-			let _state = state.splice(action.index, 1); // eslint-disable-line no-underscore-dangle
-
+	let newState;
+	switch (action.type) {
+		case NEW_MESSAGE:
 			return [
-				..._state
+				...state, action.payload
 			];
-    default:
-      return state;
-  }
+		case DEL_MESSAGE:
+			newState = state.filter(function (message, key) {
+				return key !== action.payload;
+			});
+			return [
+				...newState
+			];
+		case EDIT_MESSAGE:
+			return [
+				...state
+			];
+	default:
+		return state;
+	}
 }

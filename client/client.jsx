@@ -17,5 +17,6 @@ render(
   <Provider store={catchedStore}>
     <Router history={browserHistory} routes={routes(catchedStore)}/>
   </Provider>,
+
   document.getElementById('content')
 );

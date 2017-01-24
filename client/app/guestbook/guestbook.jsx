@@ -8,6 +8,7 @@ if (global.IS_BROWSER) {
 const propTypes = {
 	onSendMessage: PropTypes.func.isRequired,
 	onDelComment: PropTypes.func.isRequired,
+	onEditComment: PropTypes.func.isRequired,
 	messages: PropTypes.array.isRequired
 };
 
@@ -21,6 +22,7 @@ class GuestBook extends Component {
 			messageLength: 500
 		};
 
+		this.handleRemove = this.handleRemove.bind(this);
 		this.handleRemove = this.handleRemove.bind(this);
 	}
 
@@ -60,6 +62,10 @@ class GuestBook extends Component {
 		this.props.onDelComment(index);
 	}
 
+	handleEdit({index}) {
+		this.props.onEditComment(index);
+	}
+
 	render() {
 		return (
 			<div className='wrap'>
@@ -69,6 +75,9 @@ class GuestBook extends Component {
 							function handleRemoveAdapter() {
 								this.handleRemove({index});
 							}
+							function handleEditAdapter() {
+								this.handleEdit({index});
+							}
 							return (
 								<li key={index} id={message.id} className='items list__items'>
 									<div className='header-item items__header-item'>
@@ -76,7 +85,8 @@ class GuestBook extends Component {
 										<div className='header-item__name-item'>{message.name}</div>
 										<div className='header-item__handlers'>
 											<div className='header-item__edit-item'>
-												<button type='button'>
+												<button type='button'
+												onClick={handleEditAdapter.bind(this)}>
 													<img src='../../images/edit.svg' alt='edit' />
 												</button>
 											</div>
@@ -170,8 +180,11 @@ function mapDispatchToProps(dispatch) {
 			};
 			dispatch({type: 'NEW_MESSAGE', payload});
 		},
-		onDelComment: (index) => {
-			dispatch({type: 'DEL_MESSAGE', index});
+		onDelComment: (payload) => {
+			dispatch({type: 'DEL_MESSAGE', payload});
+		},
+		onEditComment: (payload) => {
+			dispatch({type: 'EDIT_MESSAGE', payload});
 		}
 	});
 }
