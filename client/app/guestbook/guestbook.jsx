@@ -179,6 +179,7 @@ function mapDispatchToProps(dispatch) {
 				time: time
 			};
 			dispatch({type: 'NEW_MESSAGE', payload});
+			mapToLocalStorage(message);
 		},
 		onDelComment: (payload) => {
 			dispatch({type: 'DEL_MESSAGE', payload});
@@ -187,6 +188,13 @@ function mapDispatchToProps(dispatch) {
 			dispatch({type: 'EDIT_MESSAGE', payload});
 		}
 	});
+}
+
+let list = [];
+
+function mapToLocalStorage(message) {
+	list.push(message);
+	localStorage.setItem('list', JSON.stringify(list));
 }
 
 export default connect(

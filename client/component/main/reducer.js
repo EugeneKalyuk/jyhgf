@@ -1,7 +1,6 @@
 import {NEW_MESSAGE, DEL_MESSAGE, EDIT_MESSAGE} from './actions';
 
-const init = JSON.parse(localStorage.getItem('list')) || [];
-console.log(init); // eslint-disable-line
+const init = [];
 
 export default function main(state = init, action) {
 	let newState;
