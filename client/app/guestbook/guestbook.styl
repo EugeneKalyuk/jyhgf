@@ -6,10 +6,10 @@
 	height 100%
 	.container
 		&:first-child
-			display table
+
 			padding-bottom  250px
 			margin-bottom  -250px
-			height 100%
+			min-height 100%
 
 .header-item,
 .message-field,
@@ -63,9 +63,5 @@
 	display block
 	width 100%
 
-.error-message
-	opacity 0
-	transition .2s all
-
-	&_active
-		opacity 1
+.error
+	background-color  red

@@ -9,6 +9,7 @@ const propTypes = {
 	onSendMessage: PropTypes.func.isRequired,
 	onDelComment: PropTypes.func.isRequired,
 	onEditComment: PropTypes.func.isRequired,
+	onLoadLocalStorage: PropTypes.func.isRequired,
 	messages: PropTypes.array.isRequired
 };
 
@@ -19,17 +20,31 @@ class GuestBook extends Component {
 		this.state = {
 			name: '',
 			message: '',
-			messageLength: 500
+			messageLength: 500,
+			errorName: '',
+			errorMessage: ''
 		};
 
 		this.handleRemove = this.handleRemove.bind(this);
 		this.handleRemove = this.handleRemove.bind(this);
 	}
 
+	componentDidMount() {
+		const localStore = JSON.parse(localStorage.getItem('list'));
+		if (localStore.length) {
+			this.props.onLoadLocalStorage(localStore);
+		}
+	}
+
 	handleName(e) {
 		this.setState({
 			name: e.target.value
 		});
+		if (e.target.value) {
+			this.setState({
+				errorName: ''
+			});
+		}
 	}
 
 	handleMessage(e) {
@@ -41,6 +56,11 @@ class GuestBook extends Component {
 			message: e.target.value,
 			messageLength: counterSymbols
 		});
+		if (e.target.value) {
+			this.setState({
+				errorMessage: ''
+			});
+		}
 	}
 
 	handleSubmit(e) {
@@ -53,6 +73,17 @@ class GuestBook extends Component {
 				message: '',
 				messageLength: 500
 			});
+		} else {
+			if (this.state.name === '') {
+				this.setState({
+					errorName: 'error'
+				});
+			}
+			if (this.state.message === '') {
+				this.setState({
+					errorMessage: 'error'
+				});
+			}
 		}
 
 		return false;
@@ -67,6 +98,7 @@ class GuestBook extends Component {
 	}
 
 	render() {
+		console.log(this.props.messages); // eslint-disable-line
 		return (
 			<div className='wrap'>
 				<div className='container'>
@@ -106,14 +138,20 @@ class GuestBook extends Component {
 					</ul>
 				</div>
 				<div className='container'>
-					<label htmlFor='name' className='label-primary label'>Name</label>
+					<label htmlFor='name'
+						className={'label-primary label ' + this.state.errorName}>
+						Name
+					</label>
 					<input type='text'
 						className='name-field'
 						value={this.state.name}
 						onChange={this.handleName.bind(this)}
 						id='name'
 					/>
-					<label htmlFor='message' className='label-primary label'>Message</label>
+					<label htmlFor='message'
+						className={'label-primary label ' + this.state.errorMessage}>
+						Message
+					</label>
 					<textarea rows='4'
 						className='message-field'
 						id='message'
@@ -135,8 +173,12 @@ class GuestBook extends Component {
 GuestBook.propTypes = propTypes;
 
 function mapStateToProps(state) {
+	const list = [
+		...state.localStorage,
+		...state.main
+	];
 	return ({
-		messages: state.main
+		messages: list
 	});
 }
 
@@ -186,6 +228,9 @@ function mapDispatchToProps(dispatch) {
 		},
 		onEditComment: (payload) => {
 			dispatch({type: 'EDIT_MESSAGE', payload});
+		},
+		onLoadLocalStorage: (payload) => {
+			dispatch({type: 'LOAD_LOCALSTORAGE', payload});
 		}
 	});
 }
@@ -201,26 +246,3 @@ export default connect(
 	mapStateToProps,
 	mapDispatchToProps
 )(GuestBook);
-
-// const validateFields = {
-// 		name: {required: true},
-// 		message: {required: true}
-// 	};
-// const errors = {};
-//
-// Object.keys(this.state).forEach((fieldName) => {
-// 	if (validateFields[fieldName]) {
-// 		if (validateFields[fieldName].required) {
-// 			if (!this.state[fieldName]) {
-// 				errors[fieldName] = validateFields[fieldName].required;
-// 			}
-// 		}
-// 	}
-// });
-//
-// if (Object.keys(errors).length) {
-// 	console.log(errors); // eslint-disable-line no-console
-// 	return this.setState({errors});
-// }
-//
-// console.log(errors); // eslint-disable-line no-console
